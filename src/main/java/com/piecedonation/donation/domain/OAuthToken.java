@@ -1,5 +1,6 @@
 package com.piecedonation.donation.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.piecedonation.donation.service.auth.MemberInfo;
 
 import java.util.Arrays;
@@ -20,7 +21,7 @@ public class OAuthToken {
 
     private final String idToken;
 
-    public OAuthToken(String idToken) {
+    public OAuthToken(@JsonProperty("id_token") String idToken) {
         this.idToken = idToken;
     }
 
