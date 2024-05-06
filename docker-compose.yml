@@ -1,0 +1,8 @@
+services:
+  docker-mysql:
+    image: mysql:8.0.33
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=pd
+    ports:
+      - 20000:3306
