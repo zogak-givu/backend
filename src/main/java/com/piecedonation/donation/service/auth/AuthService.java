@@ -56,7 +56,7 @@ public class AuthService {
     }
 
     private JwtBuilder builder(long expired) {
-        final Date validity = new Date(System.currentTimeMillis() + expired);
+        Date validity = new Date(System.currentTimeMillis() + expired);
 
         return Jwts.builder()
                 .setIssuedAt(new Date())
@@ -77,7 +77,7 @@ public class AuthService {
     }
 
     private void validate(String token) {
-        final Claims claims = toClaims(token);
+        Claims claims = toClaims(token);
 
         if (claims.getExpiration().before(new Date())) {
             throw new IllegalArgumentException("만료된 토큰입니다.");

@@ -47,17 +47,17 @@ public class AuthController {
     }
 
     @GetMapping
-    public ResponseEntity<TokenResponse> refreshToken( HttpServletRequest request, HttpServletResponse response,
+    public ResponseEntity<TokenResponse> refreshToken(HttpServletRequest request, HttpServletResponse response,
                                                       @CookieValue(name = REFRESH_TOKEN) String refreshToken) {
-        final String accessToken = request.getHeader(AUTHORIZATION).replace(BEARER, "");
-        final TokenResponse tokenResponse = authService.refreshAccessToken(accessToken, refreshToken);
+        String accessToken = request.getHeader(AUTHORIZATION).replace(BEARER, "");
+        TokenResponse tokenResponse = authService.refreshAccessToken(accessToken, refreshToken);
         setRefreshTokenCookie(response);
         return ResponseEntity.ok(tokenResponse);
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> logout(final HttpServletResponse response) {
-        final Cookie cookie = new Cookie(REFRESH_TOKEN, null);
+    public ResponseEntity<Void> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie(REFRESH_TOKEN, null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
 
