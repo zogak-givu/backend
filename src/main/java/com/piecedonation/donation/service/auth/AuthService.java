@@ -3,6 +3,7 @@ package com.piecedonation.donation.service.auth;
 import com.piecedonation.donation.controller.TokenResponse;
 import com.piecedonation.donation.domain.Member;
 import com.piecedonation.donation.domain.MemberRepository;
+import com.piecedonation.donation.service.blockchain.WalletService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
@@ -25,17 +26,20 @@ public class AuthService {
     private final long accessTokenExpired;
     private final long refreshTokenExpired;
 
+    private final WalletService walletService;
     private final MemberRepository memberRepository;
     private final OAuthClient oauthClient;
 
     public AuthService(@Value("${spring.auth.key}") String key,
                        @Value("${spring.auth.accessTokenExpired}") long accessTokenExpired,
                        @Value("${spring.auth.refreshTokenExpired}") long refreshTokenExpired,
+                       WalletService walletService,
                        MemberRepository memberRepository,
                        OAuthClient oauthClient) {
         this.key = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpired = accessTokenExpired;
         this.refreshTokenExpired = refreshTokenExpired;
+        this.walletService = walletService;
         this.memberRepository = memberRepository;
         this.oauthClient = oauthClient;
     }
@@ -44,9 +48,15 @@ public class AuthService {
     public TokenResponse createAccessToken(String code) {
         MemberInfo memberInfo = oauthClient.getMemberInfo(code);
         Member member = memberRepository.findById(memberInfo.openId())
-                .orElseGet(() -> memberRepository.save(new Member(memberInfo.openId(), memberInfo.name())));
+                .orElseGet(() -> saveNewMember(new Member(memberInfo.openId(), memberInfo.name())));
 
         return new TokenResponse(accessTokenFromMember(member.getId()));
+    }
+
+    public Member saveNewMember(Member member) {
+        Member savedMember = memberRepository.save(member);
+        walletService.createWallet(savedMember);
+        return savedMember;
     }
 
     private String accessTokenFromMember(String memberId) {
