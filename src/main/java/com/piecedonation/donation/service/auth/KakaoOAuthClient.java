@@ -14,10 +14,6 @@ public class KakaoOAuthClient extends OAuthClient{
     private String clientSecret;
     @Value("${spring.auth.kakao.redirectUri}")
     private String redirectUri;
-    @Value("${spring.auth.kakao.authUri}")
-    private String kakaoAuthUri;
-    @Value("${spring.auth.kakao.scope}")
-    private String scope;
 
     @Override
     protected String clientId() {
@@ -37,15 +33,5 @@ public class KakaoOAuthClient extends OAuthClient{
     @Override
     protected String tokenUri() {
         return kakaoTokenUri;
-    }
-
-    @Override
-    public String authUri() {
-        return kakaoAuthUri;
-    }
-
-    @Override
-    protected String scope() {
-        return scope;
     }
 }

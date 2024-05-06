@@ -4,7 +4,6 @@ import com.piecedonation.donation.domain.OAuthToken;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Objects;
@@ -16,10 +15,8 @@ public abstract class OAuthClient {
     private static final String CLIENT_ID = "client_id";
     private static final String CLIENT_SECRET = "client_secret";
     private static final String REDIRECT_URI = "redirect_uri";
-    private static final String RESPONSE_TYPE = "response_type";
-    private static final String SCOPE = "scope";
 
-    private final static RestTemplate restTemplate = new RestTemplate();
+    private static final RestTemplate restTemplate = new RestTemplate();
 
     public MemberInfo getMemberInfo(final String code) {
         final MultiValueMap<String, String> parameter = setParameters(code);
@@ -39,16 +36,6 @@ public abstract class OAuthClient {
         return parameter;
     }
 
-    public String getAuthorizationUrl() {
-        return UriComponentsBuilder.fromUriString(authUri())
-                .queryParam(RESPONSE_TYPE, CODE)
-                .queryParam(REDIRECT_URI, redirectUri())
-                .queryParam(CLIENT_ID, clientId())
-                .queryParam(SCOPE, scope())
-                .build()
-                .toUriString();
-    }
-
     protected abstract String clientId();
 
     protected abstract String clientSecret();
@@ -56,10 +43,6 @@ public abstract class OAuthClient {
     protected abstract String redirectUri();
 
     protected abstract String tokenUri();
-
-    protected abstract String authUri();
-
-    protected abstract String scope();
 
 }
 
