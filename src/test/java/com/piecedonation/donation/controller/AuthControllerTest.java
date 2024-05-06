@@ -2,6 +2,8 @@ package com.piecedonation.donation.controller;
 
 import com.piecedonation.donation.service.auth.KakaoOAuthClient;
 import com.piecedonation.donation.service.auth.MemberInfo;
+import com.piecedonation.donation.service.blockchain.LuniverseClient;
+import com.piecedonation.donation.service.blockchain.WalletData;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,6 +27,8 @@ class AuthControllerTest {
     private int port;
     @SpyBean
     KakaoOAuthClient oAuthClient;
+    @SpyBean
+    LuniverseClient luniverseClient;
 
     @BeforeEach
     void setUp() {
@@ -37,6 +41,8 @@ class AuthControllerTest {
         final String testAuthCode = "testAuthCode";
         doReturn(new MemberInfo("id", "name"))
                 .when(oAuthClient).getMemberInfo(anyString());
+        doReturn(new WalletData("walletId", "address"))
+                .when(luniverseClient).createAccount(anyString());
 
         //when
         final Response response = RestAssured.
