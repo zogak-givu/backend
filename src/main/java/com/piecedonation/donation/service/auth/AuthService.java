@@ -3,6 +3,8 @@ package com.piecedonation.donation.service.auth;
 import com.piecedonation.donation.controller.TokenResponse;
 import com.piecedonation.donation.domain.Member;
 import com.piecedonation.donation.domain.MemberRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -16,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class AuthService {
 
     private final SecretKey key;
@@ -38,6 +40,7 @@ public class AuthService {
         this.oauthClient = oauthClient;
     }
 
+    @Transactional
     public TokenResponse createAccessToken(String code) {
         MemberInfo memberInfo = oauthClient.getMemberInfo(code);
         Member member = memberRepository.findById(memberInfo.openId())
@@ -52,12 +55,46 @@ public class AuthService {
                 .compact();
     }
 
-    private JwtBuilder builder(final long expired) {
+    private JwtBuilder builder(long expired) {
         final Date validity = new Date(System.currentTimeMillis() + expired);
 
         return Jwts.builder()
                 .setIssuedAt(new Date())
                 .setExpiration(validity)
                 .signWith(key, SignatureAlgorithm.HS256);
+    }
+
+    public TokenResponse createRefreshToken() {
+        String refreshToken = builder(refreshTokenExpired).compact();
+        return new TokenResponse(refreshToken);
+    }
+
+    public TokenResponse refreshAccessToken(String access, String refresh) {
+        validate(refresh);
+        String memberId = toClaims(access).getSubject();
+        String token = accessTokenFromMember(memberId);
+        return new TokenResponse(token);
+    }
+
+    private void validate(String token) {
+        final Claims claims = toClaims(token);
+
+        if (claims.getExpiration().before(new Date())) {
+            throw new IllegalArgumentException("만료된 토큰입니다.");
+        }
+    }
+
+    private Claims toClaims(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (final ExpiredJwtException expired) {
+            return expired.getClaims();
+        } catch (final Exception e) {
+            throw new IllegalArgumentException("잘못된 토큰입니다.");
+        }
     }
 }
