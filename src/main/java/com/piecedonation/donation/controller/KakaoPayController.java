@@ -30,7 +30,9 @@ public class KakaoPayController {
     public ResponseEntity afterPayRequest(@RequestBody KakaoPayApproveRequest request) {
         return ResponseEntity.ok(kakaoPayService.getKakaoPayApprove(request));
     }
-
+    /**
+     * 환불
+     */
     @PostMapping("/refund")
     public ResponseEntity refund(@RequestBody KaKaoPayCancleRequest request) {
         return ResponseEntity.ok(kakaoPayService.getkakaoPayCancel(request));
