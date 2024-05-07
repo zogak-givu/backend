@@ -1,6 +1,8 @@
 package com.piecedonation.donation.service.payment;
 
 import com.piecedonation.donation.domain.KakaoPayProperties;
+import com.piecedonation.donation.dto.KakaoPayApproveRequest;
+import com.piecedonation.donation.dto.KakaoPayApproveResponse;
 import com.piecedonation.donation.dto.KakaoPayReadyRequest;
 import com.piecedonation.donation.dto.KakaoPayReadyResponse;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +56,33 @@ public class KakaoPayService {
         parameters.add("approval_url", request.getApproval_url());
         parameters.add("cancel_url", request.getCancel_url());
         parameters.add("fail_url", request.getFail_url());
+
+        return parameters;
+    }
+
+    public KakaoPayApproveResponse getKakaoPayApprove(KakaoPayApproveRequest request) {
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(this.getApproveParameters(request), this.getHeaders());
+
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            KakaoPayApproveResponse response = restTemplate.postForObject(
+                    KakaoPayProperties.approveUrl,
+                    requestEntity,
+                    KakaoPayApproveResponse.class
+            );
+            return response;
+        } catch (HttpClientErrorException e) {
+            throw new HttpClientErrorException(e.getStatusCode(), e.getMessage());
+        }
+    }
+
+    private MultiValueMap<String, String> getApproveParameters(KakaoPayApproveRequest request) {
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("cid", KakaoPayProperties.cid);
+        parameters.add("partner_order_id", request.getPartner_order_id());
+        parameters.add("partner_user_id", request.getPartner_user_id());
+        parameters.add("tid", request.getTid());
+        parameters.add("pg_token", request.getPg_token());
 
         return parameters;
     }
