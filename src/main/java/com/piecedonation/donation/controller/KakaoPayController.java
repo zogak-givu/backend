@@ -1,7 +1,7 @@
 package com.piecedonation.donation.controller;
 
+import com.piecedonation.donation.dto.KaKaoPayCancleRequest;
 import com.piecedonation.donation.dto.KakaoPayApproveRequest;
-import com.piecedonation.donation.dto.KakaoPayApproveResponse;
 import com.piecedonation.donation.service.payment.KakaoPayService;
 import com.piecedonation.donation.dto.KakaoPayReadyRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +31,9 @@ public class KakaoPayController {
         return ResponseEntity.ok(kakaoPayService.getKakaoPayApprove(request));
     }
 
+    @PostMapping("/refund")
+    public ResponseEntity refund(@RequestBody KaKaoPayCancleRequest request) {
+        return ResponseEntity.ok(kakaoPayService.getkakaoPayCancel(request));
+    }
 
 }

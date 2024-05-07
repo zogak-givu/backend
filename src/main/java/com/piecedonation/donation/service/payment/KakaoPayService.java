@@ -1,10 +1,7 @@
 package com.piecedonation.donation.service.payment;
 
 import com.piecedonation.donation.domain.KakaoPayProperties;
-import com.piecedonation.donation.dto.KakaoPayApproveRequest;
-import com.piecedonation.donation.dto.KakaoPayApproveResponse;
-import com.piecedonation.donation.dto.KakaoPayReadyRequest;
-import com.piecedonation.donation.dto.KakaoPayReadyResponse;
+import com.piecedonation.donation.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -83,6 +80,33 @@ public class KakaoPayService {
         parameters.add("partner_user_id", request.getPartner_user_id());
         parameters.add("tid", request.getTid());
         parameters.add("pg_token", request.getPg_token());
+
+        return parameters;
+    }
+
+
+    public KakaoPayCancleResponse getkakaoPayCancel(KaKaoPayCancleRequest request) {
+        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(getCancleParameters(request), getHeaders());
+
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            KakaoPayCancleResponse response = restTemplate.postForObject(
+                    KakaoPayProperties.cancleUrl,
+                    requestEntity,
+                    KakaoPayCancleResponse.class
+            );
+            return response;
+        } catch (HttpClientErrorException e) {
+            throw new HttpClientErrorException(e.getStatusCode(), e.getMessage());
+        }
+    }
+
+    private MultiValueMap<String, String> getCancleParameters(KaKaoPayCancleRequest request) {
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("cid", KakaoPayProperties.cid);
+        parameters.add("tid", request.getTid());
+        parameters.add("cancel_amount", String.valueOf(request.getCancel_amount()));
+        parameters.add("cancel_tax_free_amount", String.valueOf(request.getCancel_tax_free_amount()));
 
         return parameters;
     }

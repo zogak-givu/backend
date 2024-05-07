@@ -13,4 +13,6 @@ public class KakaoPayProperties {
     public static String readyUrl;
     @Value("${kakaopay.approve-url}")
     public static String approveUrl;
+    @Value("${kakaopay.cancle-url}")
+    public static String cancleUrl;
 }
