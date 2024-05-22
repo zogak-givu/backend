@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class GlobalControllerAdvice {
+public class    GlobalControllerAdvice {
 
     private final Logger logger = LoggerFactory.getLogger("Exception Handler");
 

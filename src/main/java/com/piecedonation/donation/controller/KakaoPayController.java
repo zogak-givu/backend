@@ -26,7 +26,7 @@ public class KakaoPayController {
     /**
      * 결제 성공
      */
-    @GetMapping("/success")
+    @PostMapping("/success")
     public ResponseEntity afterPayRequest(@RequestBody KakaoPayApproveRequest request) {
         return ResponseEntity.ok(kakaoPayService.getKakaoPayApprove(request));
     }
