@@ -2,18 +2,24 @@ package com.piecedonation.donation.controller;
 
 import com.piecedonation.donation.dto.KaKaoPayCancleRequest;
 import com.piecedonation.donation.dto.KakaoPayApproveRequest;
-import com.piecedonation.donation.service.payment.KakaoPayService;
 import com.piecedonation.donation.dto.KakaoPayReadyRequest;
-import lombok.RequiredArgsConstructor;
+import com.piecedonation.donation.service.payment.KakaoPayService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/pay/kakao")
-@RequiredArgsConstructor
 public class KakaoPayController {
 
     private final KakaoPayService kakaoPayService;
+
+    public KakaoPayController(KakaoPayService kakaoPayService) {
+        this.kakaoPayService = kakaoPayService;
+    }
 
     /**
      * 결제요청
