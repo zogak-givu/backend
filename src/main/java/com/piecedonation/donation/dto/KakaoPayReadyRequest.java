@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class KakaoPayReadyRequest {
-    String cid; //가맹점 코드, 10자
     String partner_order_id; //가맹점 주문번호, 최대 100자
     String partner_user_id; //가맹점 회원 id, 최대 100자
     String item_name;  //상품명, 최대 100자
