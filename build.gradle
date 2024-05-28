@@ -36,6 +36,7 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	testImplementation group: 'com.h2database', name: 'h2', version: '2.1.214'
 
+	implementation("com.squareup.okhttp3:okhttp:4.9.1")
 
 	//DB
 	runtimeOnly 'com.mysql:mysql-connector-j'

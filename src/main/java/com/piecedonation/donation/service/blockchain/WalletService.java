@@ -22,4 +22,17 @@ public class WalletService {
         WalletData walletData = luniverseClient.createAccount(member.getId());
         walletRepository.save(new Wallet(walletData.walletId(),walletData.address(), member));
     }
+
+    public String findHistory(String accountId) {
+        return luniverseClient.findHistory(accountId);
+    }
+
+    public String findTxHistory(String txId) {
+        try {
+            return luniverseClient.getTxHistory(txId);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
+
+    }
 }
