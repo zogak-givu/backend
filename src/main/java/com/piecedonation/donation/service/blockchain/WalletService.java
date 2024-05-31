@@ -3,6 +3,7 @@ package com.piecedonation.donation.service.blockchain;
 import com.piecedonation.donation.domain.Member;
 import com.piecedonation.donation.domain.Wallet;
 import com.piecedonation.donation.domain.WalletRepository;
+import com.piecedonation.donation.domain.organization.Organization;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,8 +19,9 @@ public class WalletService {
         this.walletRepository = walletRepository;
     }
 
-    public void createWallet(Member member) {
+    @Transactional
+    public void createWallet(Member member, Organization organization) {
         WalletData walletData = luniverseClient.createAccount(member.getId());
-        walletRepository.save(new Wallet(walletData.walletId(),walletData.address(), member));
+        walletRepository.save(new Wallet(walletData.walletId(),walletData.address(), member, organization));
     }
 }

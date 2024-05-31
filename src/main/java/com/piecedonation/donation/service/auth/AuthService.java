@@ -3,6 +3,8 @@ package com.piecedonation.donation.service.auth;
 import com.piecedonation.donation.controller.TokenResponse;
 import com.piecedonation.donation.domain.Member;
 import com.piecedonation.donation.domain.MemberRepository;
+import com.piecedonation.donation.domain.organization.Organization;
+import com.piecedonation.donation.domain.organization.OrganizationRepository;
 import com.piecedonation.donation.service.blockchain.WalletService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
@@ -28,6 +31,8 @@ public class AuthService {
 
     private final WalletService walletService;
     private final MemberRepository memberRepository;
+    private final OrganizationRepository organizationRepository;
+
     private final OAuthClient oauthClient;
 
     public AuthService(@Value("${spring.auth.key}") String key,
@@ -35,12 +40,14 @@ public class AuthService {
                        @Value("${spring.auth.refreshTokenExpired}") long refreshTokenExpired,
                        WalletService walletService,
                        MemberRepository memberRepository,
+                       OrganizationRepository organizationRepository,
                        OAuthClient oauthClient) {
         this.key = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpired = accessTokenExpired;
         this.refreshTokenExpired = refreshTokenExpired;
         this.walletService = walletService;
         this.memberRepository = memberRepository;
+        this.organizationRepository = organizationRepository;
         this.oauthClient = oauthClient;
     }
 
@@ -53,9 +60,13 @@ public class AuthService {
         return new TokenResponse(accessTokenFromMember(member.getId()));
     }
 
-    public Member saveNewMember(Member member) {
+    private Member saveNewMember(Member member) {
         Member savedMember = memberRepository.save(member);
-        walletService.createWallet(savedMember);
+        List<Organization> organizations = organizationRepository.findAll();
+        for (Organization organization:organizations) {
+            walletService.createWallet(savedMember, organization);
+        }
+
         return savedMember;
     }
 
@@ -81,12 +92,16 @@ public class AuthService {
 
     public TokenResponse refreshAccessToken(String access, String refresh) {
         validate(refresh);
-        String memberId = toClaims(access).getSubject();
+        String memberId = getMemberId(access);
         String token = accessTokenFromMember(memberId);
         return new TokenResponse(token);
     }
 
-    private void validate(String token) {
+    public String getMemberId(String access) {
+        return toClaims(access).getSubject();
+    }
+
+    public void validate(String token) {
         Claims claims = toClaims(token);
 
         if (claims.getExpiration().before(new Date())) {
