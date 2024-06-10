@@ -14,6 +14,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class LuniverseClient {
@@ -26,6 +27,7 @@ public class LuniverseClient {
 
     private static final String BEARER = "Bearer";
 
+    private static final String SERVICE_DEOA = "0x9ca179b9d6b58b4f93a02ee6d6d7f7057a6f9e0a";
     private static final RestTemplate restTemplate = new RestTemplate();
 
     @Value("${spring.luniverse.environmentId}")
@@ -94,4 +96,48 @@ public class LuniverseClient {
         headers.set("Authorization", BEARER + " " + getLuniverseAuthToken());
         return setRequestBody(paramMap, headers);
     }
+
+    public void transferTokenToMemberWallet(String memberWalletAddress) {
+        String tokenValue = "1";
+        approveSpender(tokenValue);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", BEARER + " " + getLuniverseAuthToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("txId", UUID.randomUUID().toString());
+        requestBody.put("from", SERVICE_DEOA);
+
+        Map<String, String> inputs = new HashMap<>();
+        inputs.put("_from", SERVICE_DEOA);
+        inputs.put("_to", memberWalletAddress);
+        inputs.put("_value", tokenValue);
+        requestBody.put("inputs", inputs);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+        String url = "https://console-api.lambda256.io/tx/v2.0/transactions/transferLMT";
+        restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+    }
+
+    private void approveSpender(String value) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", BEARER + " " + getLuniverseAuthToken());
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("txId", UUID.randomUUID().toString());
+        requestBody.put("from", SERVICE_DEOA);
+
+        Map<String, String> inputs = new HashMap<>();
+        inputs.put("_spender", SERVICE_DEOA);
+        inputs.put("_value", value);
+        requestBody.put("inputs", inputs);
+
+        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
+
+        String url = "https://console-api.lambda256.io/tx/v2.0/transactions/approveServiceDEOAoutput";
+        restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+    }
+
 }

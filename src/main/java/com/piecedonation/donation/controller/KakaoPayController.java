@@ -1,11 +1,11 @@
 package com.piecedonation.donation.controller;
 
+import com.piecedonation.donation.domain.Member;
 import com.piecedonation.donation.dto.KaKaoPayCancleRequest;
 import com.piecedonation.donation.dto.KakaoPayApproveRequest;
 import com.piecedonation.donation.dto.KakaoPayReadyRequest;
 import com.piecedonation.donation.service.payment.KakaoPayService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +25,7 @@ public class KakaoPayController {
      * 결제요청
      */
     @PostMapping("/ready")
-    public ResponseEntity readyKakaoPay(@RequestBody KakaoPayReadyRequest request) {
+    public ResponseEntity readyKakaoPay(@RequestBody KakaoPayReadyRequest request, Member member) {
         return ResponseEntity.ok(kakaoPayService.getKakaoPayReady(request));
     }
 
@@ -33,14 +33,15 @@ public class KakaoPayController {
      * 결제 성공
      */
     @PostMapping("/success")
-    public ResponseEntity afterPayRequest(@RequestBody KakaoPayApproveRequest request) {
-        return ResponseEntity.ok(kakaoPayService.getKakaoPayApprove(request));
+    public ResponseEntity afterPayRequest(@RequestBody KakaoPayApproveRequest request, Member member) {
+        return ResponseEntity.ok(kakaoPayService.getKakaoPayApprove(request, member));
     }
+
     /**
      * 환불
      */
     @PostMapping("/refund")
-    public ResponseEntity refund(@RequestBody KaKaoPayCancleRequest request) {
+    public ResponseEntity refund(@RequestBody KaKaoPayCancleRequest request, Member member) {
         return ResponseEntity.ok(kakaoPayService.getkakaoPayCancel(request));
     }
 

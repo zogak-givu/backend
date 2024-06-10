@@ -1,5 +1,6 @@
 package com.piecedonation.donation.domain;
 
+import com.piecedonation.donation.domain.organization.Organization;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -18,12 +19,33 @@ public class Wallet {
     @JoinColumn(nullable = false)
     private Member member;
 
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Organization organization;
+
     protected Wallet() {
     }
 
-    public Wallet(String id, String address, Member member) {
+    public Wallet(String id, String address, Member member, Organization organization) {
         this.id = id;
         this.address = address;
         this.member = member;
+        this.organization = organization;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public Member getMember() {
+        return member;
+    }
+
+    public Organization getOrganization() {
+        return organization;
     }
 }
