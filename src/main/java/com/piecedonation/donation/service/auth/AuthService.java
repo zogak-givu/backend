@@ -3,8 +3,8 @@ package com.piecedonation.donation.service.auth;
 import com.piecedonation.donation.controller.TokenResponse;
 import com.piecedonation.donation.domain.Member;
 import com.piecedonation.donation.domain.MemberRepository;
-import com.piecedonation.donation.domain.organization.Organization;
-import com.piecedonation.donation.domain.organization.OrganizationRepository;
+import com.piecedonation.donation.domain.charity.Charity;
+import com.piecedonation.donation.domain.charity.CharityRepository;
 import com.piecedonation.donation.service.blockchain.WalletService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -31,7 +31,7 @@ public class AuthService {
 
     private final WalletService walletService;
     private final MemberRepository memberRepository;
-    private final OrganizationRepository organizationRepository;
+    private final CharityRepository charityRepository;
 
     private final OAuthClient oauthClient;
 
@@ -40,14 +40,14 @@ public class AuthService {
                        @Value("${spring.auth.refreshTokenExpired}") long refreshTokenExpired,
                        WalletService walletService,
                        MemberRepository memberRepository,
-                       OrganizationRepository organizationRepository,
+                       CharityRepository charityRepository,
                        OAuthClient oauthClient) {
         this.key = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
         this.accessTokenExpired = accessTokenExpired;
         this.refreshTokenExpired = refreshTokenExpired;
         this.walletService = walletService;
         this.memberRepository = memberRepository;
-        this.organizationRepository = organizationRepository;
+        this.charityRepository = charityRepository;
         this.oauthClient = oauthClient;
     }
 
@@ -62,8 +62,8 @@ public class AuthService {
 
     private Member saveNewMember(Member member) {
         Member savedMember = memberRepository.save(member);
-        List<Organization> organizations = organizationRepository.findAll();
-        for (Organization organization:organizations) {
+        List<Charity> organizations = charityRepository.findAll();
+        for (Charity organization:organizations) {
             walletService.createWallet(savedMember, organization);
         }
 
