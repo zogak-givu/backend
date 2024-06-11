@@ -34,6 +34,13 @@ public class KakaoPayTestController {
         return "transfer success";
     }
 
+    @PostMapping("/contract")
+    public String testContract(@RequestParam("user") String user, @RequestParam("charity") String charity) {
+        String testAmount = "5";
+        luniverseClient.executeContract(user, charity, testAmount);
+        return "transfer success";
+    }
+
     @GetMapping("/fail")
     public String fail() {
         return "fail";
