@@ -8,6 +8,8 @@ import com.piecedonation.donation.dto.KakaoPayApproveResponse;
 import com.piecedonation.donation.dto.KakaoPayCancleResponse;
 import com.piecedonation.donation.dto.KakaoPayReadyRequest;
 import com.piecedonation.donation.dto.KakaoPayReadyResponse;
+import com.piecedonation.donation.service.blockchain.ContractService;
+import com.piecedonation.donation.service.blockchain.LuniverseClient;
 import com.piecedonation.donation.service.blockchain.WalletService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
@@ -21,26 +23,29 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 
 @Service
-@RequiredArgsConstructor
 public class KakaoPayService {
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final KakaoPayProperties kakaoPayProperties;
     private final WalletService walletService;
+    private final ContractService contractService;
+
+    public KakaoPayService(KakaoPayProperties kakaoPayProperties, WalletService walletService, ContractService contractService) {
+        this.kakaoPayProperties = kakaoPayProperties;
+        this.walletService = walletService;
+        this.contractService = contractService;
+    }
 
     public KakaoPayReadyResponse getKakaoPayReady(KakaoPayReadyRequest request) {
         HttpEntity<HashMap<String, Object>> requestEntity = new HttpEntity<>(getReadyParameters(request), getHeaders());
-        try {
-            ResponseEntity<KakaoPayReadyResponse> response = restTemplate.exchange(
-                    kakaoPayProperties.getReadyUrl(),
-                    HttpMethod.POST,
-                    requestEntity,
-                    KakaoPayReadyResponse.class
-            );
-            return response.getBody();
-        } catch (HttpClientErrorException e) {
-            throw new HttpClientErrorException(e.getStatusCode(), e.getMessage());
-        }
+
+        ResponseEntity<KakaoPayReadyResponse> response = restTemplate.exchange(
+                kakaoPayProperties.getReadyUrl(),
+                HttpMethod.POST,
+                requestEntity,
+                KakaoPayReadyResponse.class
+        );
+        return response.getBody();
     }
 
     private HttpHeaders getHeaders() {
@@ -72,19 +77,18 @@ public class KakaoPayService {
     public KakaoPayApproveResponse getKakaoPayApprove(KakaoPayApproveRequest request, Member member) {
         HttpEntity<HashMap<String, String>> requestEntity = new HttpEntity<>(this.getApproveParameters(request), this.getHeaders());
 
-        try {
-            HttpEntity<KakaoPayApproveResponse> response = restTemplate.exchange(
-                    kakaoPayProperties.getApproveUrl(),
-                    HttpMethod.POST,
-                    requestEntity,
-                    KakaoPayApproveResponse.class
-            );
+        HttpEntity<KakaoPayApproveResponse> response = restTemplate.exchange(
+                kakaoPayProperties.getApproveUrl(),
+                HttpMethod.POST,
+                requestEntity,
+                KakaoPayApproveResponse.class
+        );
 
-            walletService.transferTokenToMemberWallet(member, request.getOrganization_name());
-            return response.getBody();
-        } catch (HttpClientErrorException e) {
-            throw new HttpClientErrorException(e.getStatusCode(), e.getMessage());
-        }
+        walletService.transferTokenToMemberWallet(member, request.getOrganization_name());
+
+        int amount = response.getBody().getAmount().getTotal() / 100;
+        contractService.executeContract(member, request.getOrganization_name(), String.valueOf(amount));
+        return response.getBody();
     }
 
     private HashMap<String, String> getApproveParameters(KakaoPayApproveRequest request) {
@@ -102,16 +106,11 @@ public class KakaoPayService {
     public KakaoPayCancleResponse getkakaoPayCancel(KaKaoPayCancleRequest request) {
         HttpEntity<HashMap<String, String>> requestEntity = new HttpEntity<>(getCancleParameters(request), getHeaders());
 
-        try {
-             return restTemplate.postForObject(
-                    kakaoPayProperties.getCancleUrl(),
-                    requestEntity,
-                    KakaoPayCancleResponse.class
-            );
-
-        } catch (HttpClientErrorException e) {
-            throw new HttpClientErrorException(e.getStatusCode(), e.getMessage());
-        }
+        return restTemplate.postForObject(
+                kakaoPayProperties.getCancleUrl(),
+                requestEntity,
+                KakaoPayCancleResponse.class
+        );
     }
 
     private HashMap<String, String> getCancleParameters(KaKaoPayCancleRequest request) {
