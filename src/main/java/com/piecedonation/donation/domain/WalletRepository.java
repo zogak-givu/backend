@@ -11,9 +11,9 @@ import java.util.Optional;
 @Repository
 public interface WalletRepository extends JpaRepository<Wallet, String> {
 
-    @Query(value = "SELECT * FROM wallet WHERE member_id = :memberId AND organization_id = :organizationId",
+    @Query(value = "SELECT * FROM wallet WHERE member_id = :memberId AND charity_id = :charityId",
             nativeQuery = true)
-    Optional<Wallet> findByMemberAndOrganization(@Param("memberId") String memberId, @Param("organizationId") String organizationId);
+    Optional<Wallet> findByMemberAndCharity(@Param("memberId") String memberId, @Param("charityId") String charityId);
 
     @Query(value = "SELECT * FROM wallet WHERE member_id = :memberId",
             nativeQuery = true)

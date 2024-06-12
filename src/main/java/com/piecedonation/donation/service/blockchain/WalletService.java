@@ -31,7 +31,7 @@ public class WalletService {
     public void transferTokenToMemberWallet(Member member, String organizationName) {
         Charity organization = charityRepository.findByName(organizationName)
                 .orElseThrow(() -> new IllegalArgumentException("토큰 전송 실패: 존재하지 않는 기부단체입니다."));
-        Wallet wallet = walletRepository.findByMemberAndOrganization(member.getId(), organization.getId())
+        Wallet wallet = walletRepository.findByMemberAndCharity(member.getId(), organization.getId())
                 .orElseThrow(() -> new IllegalArgumentException("토큰 전송 실패: 존재하지 않는 사용자 지갑입니다."));
 
         luniverseClient.transferTokenToMemberWallet(wallet.getAddress());
