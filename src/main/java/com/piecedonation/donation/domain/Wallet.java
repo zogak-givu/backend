@@ -21,20 +21,20 @@ public class Wallet {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private Charity organization;
+    private Charity charity;
 
     protected Wallet() {
     }
 
-    public Wallet(String id, String address, Member member, Charity organization) {
+    public Wallet(String id, String address, Member member, Charity charity) {
         this.id = id;
         this.address = address;
         this.member = member;
-        this.organization = organization;
+        this.charity = charity;
     }
 
-    public boolean isMatch(Charity organization) {
-        return this.organization.equals(organization);
+    public boolean isMatch(Charity charity) {
+        return this.charity.equals(charity);
     }
     public String getId() {
         return id;
@@ -48,7 +48,7 @@ public class Wallet {
         return member;
     }
 
-    public Charity getOrganization() {
-        return organization;
+    public Charity getCharity() {
+        return charity;
     }
 }
