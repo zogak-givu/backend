@@ -154,8 +154,10 @@ public class LuniverseClient {
     }
 
     public void executeContract(String user, String charity, String amount) {
-        String approveAmount="100";
+        String approveAmount="10000";
         approveSpender(user, charity, approveAmount);
+        approveSpender(SERVICE_DEOA, OWNER_USER_CONTRACT_ADDRESS, approveAmount);
+        approveSpender(user, USER_CHARITY_CONTRACT_ADDRESS, approveAmount);
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", BEARER + " " + getLuniverseAuthToken());
