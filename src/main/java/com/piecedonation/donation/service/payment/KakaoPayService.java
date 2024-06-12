@@ -83,9 +83,6 @@ public class KakaoPayService {
                 requestEntity,
                 KakaoPayApproveResponse.class
         );
-
-        walletService.transferTokenToMemberWallet(member, request.getOrganization_name());
-
         int amount = response.getBody().getAmount().getTotal() / 100;
         contractService.executeContract(member, request.getOrganization_name(), String.valueOf(amount));
         return response.getBody();
