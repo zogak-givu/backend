@@ -9,6 +9,8 @@ import com.piecedonation.donation.domain.WalletRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,8 +36,19 @@ public class HistoryService {
             histories.addAll(userCharityHistories);
         }
 
-        return histories.stream()
+        List<HistoryResponse> historyResponses = histories.stream()
                 .map(history -> HistoryResponse.from(history))
                 .collect(Collectors.toList());
+
+        // DateTimeFormatter 설정 (타임스탬프 형식에 맞게 변경)
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // 예시 형식
+        // timestamp에 따라 최근순으로 정렬
+        historyResponses.sort((hr1, hr2) -> {
+            LocalDateTime dateTime1 = LocalDateTime.parse(hr1.timestamp(), formatter);
+            LocalDateTime dateTime2 = LocalDateTime.parse(hr2.timestamp(), formatter);
+            return dateTime2.compareTo(dateTime1); // 최근순
+        });
+
+        return historyResponses;
     }
 }
