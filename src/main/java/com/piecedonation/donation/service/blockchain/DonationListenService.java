@@ -44,8 +44,6 @@ public class DonationListenService {
     public void init() {
         OwnerToUserContract ownerToUserContract = OwnerToUserContract.load(OWNER_TO_USER_CONTRACT_ADDRESS, web3j, credentials, gasProvider);
 
-        LocalDateTime nowInKorea = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
-
         //이벤트 구독
         ownerToUserContract.donationInitiatedEventFlowable(DefaultBlockParameterName.EARLIEST, DefaultBlockParameterName.LATEST)
                 .subscribe(event -> {
@@ -55,6 +53,7 @@ public class DonationListenService {
                     BigInteger amount = event.amount;
                     BigInteger id = event.id;
                     String TxHash = event.log.getTransactionHash();
+                    LocalDateTime nowInKorea = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
                     String timestamp = nowInKorea.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
                     Charity charity = charityRepository.findByWalletAddress(charityAddress).get();
