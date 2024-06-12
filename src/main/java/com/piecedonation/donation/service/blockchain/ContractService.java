@@ -22,12 +22,12 @@ public class ContractService {
     }
 
     public void executeContract(Member member, String organizationName, String amount) {
-        Charity organization = charityRepository.findByName(organizationName)
+        Charity charity = charityRepository.findByName(organizationName)
                 .orElseThrow(() -> new IllegalArgumentException("계약 실행 실패:해당 단체를 찾을 수 없습니다."));
 
-        Wallet memberWallet = walletRepository.findByMemberAndCharity(member.getId(), organization.getId())
+        Wallet memberWallet = walletRepository.findByMemberAndCharity(member.getId(), charity.getWalletAddress())
                 .orElseThrow(() -> new IllegalArgumentException("계약 실행 실패:해당하는 회원의 단체지갑을 찾을 수 없습니다."));
 
-        luniverseClient.executeContract(memberWallet.getAddress(), organization.getWalletAddress(), amount);
+        luniverseClient.executeContract(memberWallet.getAddress(), charity.getWalletAddress(), amount);
     }
 }

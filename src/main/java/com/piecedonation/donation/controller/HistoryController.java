@@ -22,9 +22,6 @@ public class HistoryController {
     @GetMapping
     public ResponseEntity<List<HistoryResponse>> memberHistory(Member member) {
         List<HistoryResponse> histories = historyService.findByMember(member);
-        for (HistoryResponse h:histories) {
-            System.out.println(h);
-        }
         return ResponseEntity.ok(histories);
     }
 }
