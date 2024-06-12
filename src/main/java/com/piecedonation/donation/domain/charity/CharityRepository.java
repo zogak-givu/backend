@@ -6,4 +6,5 @@ import java.util.Optional;
 
 public interface CharityRepository extends JpaRepository<Charity, String> {
     Optional<Charity> findByName(String name);
+    Optional<Charity> findByWalletAddress(String walletAddress);
 }

@@ -24,6 +24,9 @@ public class History {
     @Column(name = "charity_address")
     private String charityAddress;
 
+    @Column(name = "charity_name")
+    private String charityName;
+
     @Column(name = "amount", nullable = false)
     private BigInteger amount;
 
@@ -33,11 +36,13 @@ public class History {
     protected History() {
     }
 
-    public History(String txHash, String ownerAddress, String userAddress, String charityAddress, BigInteger amount, String timestamp) {
+    public History(String txHash, String ownerAddress, String userAddress, String charityAddress,
+                   String charityName, BigInteger amount, String timestamp) {
         this.txHash = txHash;
         this.ownerAddress = ownerAddress;
         this.userAddress = userAddress;
         this.charityAddress = charityAddress;
+        this.charityName = charityName;
         this.amount = amount;
         this.timestamp = timestamp;
     }
