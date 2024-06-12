@@ -38,4 +38,8 @@ public class Member {
     public String getName() {
         return name;
     }
+
+    public List<Wallet> getWallets() {
+        return wallets;
+    }
 }

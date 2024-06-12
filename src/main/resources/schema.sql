@@ -19,7 +19,7 @@ create table if not exists charity
 create table if not exists wallet
 (
     id    varchar(30)  not null primary key,
-    address  varchar(60)  not null,
+    address  varchar(50)  not null,
     member_id varchar(30) not null,
     charity_id varchar(30) not null,
     constraint fk_member

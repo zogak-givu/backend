@@ -63,6 +63,10 @@ public class History {
         return charityAddress;
     }
 
+    public String getCharityName() {
+        return charityName;
+    }
+
     public BigInteger getAmount() {
         return amount;
     }
