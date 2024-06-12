@@ -40,3 +40,4 @@ create table if not exists donation_history
 
 insert into charity (id, name, wallet_address) values ('1', 'miral', '0xec04825e20883c6e65bec92f86b29551eb2df040');
 insert into member (id, name) values ('3469515066', 'hum');
+insert into wallet (id, address, member_id, charity_id) values ('06121200', '0xf88a7a7b273869591b75cb6b621a8cc848437de5', '3469515066', '1');
